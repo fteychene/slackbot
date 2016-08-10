@@ -16,7 +16,7 @@ class Filter {
   }
 
   execute(word) {
-    var match;
+    let match;
     if (match = word.text.match(this.regex)) {
       word.filtered = true;
       word.output.push(this.apply(word, match))
@@ -32,14 +32,9 @@ const wordsFilters = {
   pri: new Filter(/pri(\S+)/i, (word, match) => `:pray: ${match[1]} :pray:`)
 }
 
-var applyFilter = true;
+let applyFilter = true;
 
 const values = (obj) => Object.keys(obj).map(key => obj[key]);
-
-const changeFilter = (newValue, acceptFilterCallback = () => {}, disableFilterCallback = () => {}) => {
-  newValue ? acceptFilterCallback() : disableFilterCallback();
-  return initialValue;
-}
 
 const authorizedUser = (user, unauthorizedCallback = () => {}) => {
   if (user !== principalUser) {
@@ -50,15 +45,12 @@ const authorizedUser = (user, unauthorizedCallback = () => {}) => {
 }
 
 const executeCommand = ({text, channel}) => {
-  switch (true) {
-    case /bot filter ?= ?(true|false).*/i.test(text):
-      newValue = (/bot filter ?= ?(true|false).*/i.exec(text)[1].toLowerCase() === 'true');
-      applyFilter = newValue;
-      newValue ? rtm.sendMessage("Cool :smirk:", channel) : rtm.sendMessage("Ok ... j'arrete :cry:", channel);
-      break;
-    case /bot config/.test(text):
-      rtm.sendMessage(`Apply filter status : ${applyFilter}\nConfigured filters : ${Object.keys(wordsFilters).join(" ")}`, channel);
-      break;
+  if ((newValue = (/bot filter ?= ?(true|false).*/i.exec(text))) != null) {
+    newValue = newValue[1].toLowerCase() === 'true'
+    applyFilter = newValue;
+    newValue ? rtm.sendMessage("Cool :smirk:", channel) : rtm.sendMessage("Ok ... j'arrete :cry:", channel);
+  } else if (/bot config/.test(text)) {
+    rtm.sendMessage(`Apply filter status : ${applyFilter}\nConfigured filters : ${Object.keys(wordsFilters).join(" ")}`, channel);
   }
 };
 
@@ -78,9 +70,11 @@ configurationMessage
 
 
 rtm.on(RTM_EVENTS.MESSAGE, (message) => {
-  if (message.text.contains("bot")) {
-    configurationMessage.onNext(message);
-  } else {
-    messageSubject.onNext(message);
+  if (message.text) {
+    if (message.text.contains("bot")) {
+      configurationMessage.onNext(message);
+    } else {
+      messageSubject.onNext(message);
+    }
   }
 });
