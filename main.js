@@ -19,17 +19,17 @@ class Filter {
     let match;
     if (match = word.text.match(this.regex)) {
       word.filtered = true;
-      word.output.push(this.apply(word, match))
+      word.output.push(this.apply(match))
     }
     return word;
   }
 }
 
 const wordsFilters = {
-  di: new Filter(/di(\S+)/i, (word, match) => `'${match[1]}`),
-  cri: new Filter(/cri(\S+)/i, (word, match) => match[1].toUpperCase()),
-  scand: new Filter(/scand(\S+)/i, (word, match) => `${match[1].toUpperCase()} ! ${match[1].toUpperCase()} ! ${match[1].toUpperCase()} !`),
-  pri: new Filter(/pri(\S+)/i, (word, match) => `:pray: ${match[1]} :pray:`)
+  di: new Filter(/di(\S+)/i, (match) => `${match[1]}`),
+  cri: new Filter(/cri(\S+)/i, (match) => match[1].toUpperCase()),
+  scand: new Filter(/scand(\S+)/i, (match) => `${match[1].toUpperCase()} ! ${match[1].toUpperCase()} ! ${match[1].toUpperCase()} !`),
+  pri: new Filter(/pri(\S+)/i, (match) => `:pray: ${match[1]} :pray:`)
 }
 
 let applyFilter = true;
@@ -64,7 +64,7 @@ messageSubject
 
 const configurationMessage = new Rx.Subject();
 configurationMessage
-  .filter(({user, channel}) => authorizedUser(user, () => rtm.sendMessage('Seul mon maitre à le droit de me donner des ordres')))
+  .filter(({user, channel}) => authorizedUser(user, () => rtm.sendMessage('Seul mon maitre à le droit de me donner des ordres', channel)))
   // .map(message => createCommand(message))
   .subscribe(message => executeCommand(message));
 
