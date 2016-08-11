@@ -4,37 +4,10 @@ const Rx = require('rx');
 const token = process.env.SLACK_API_TOKEN;
 const principalUser = process.env.MASTER_ID;
 
-const rtm = new RtmClient(token, {logLevel: 'warning'});
+const rtm = new RtmClient(token, {logLevel: 'info'});
 rtm.start();
 
 String.prototype.contains = function(it) { return this.indexOf(it) != -1; };
-
-class Filter {
-  constructor(regex, apply) {
-    this.regex = regex;
-    this.apply = apply;
-  }
-
-  execute(word) {
-    let match;
-    if (match = word.text.match(this.regex)) {
-      word.filtered = true;
-      word.output.push(this.apply(match))
-    }
-    return word;
-  }
-}
-
-const wordsFilters = {
-  di: new Filter(/di(\S+)/i, (match) => `${match[1]}`),
-  cri: new Filter(/cri(\S+)/i, (match) => match[1].toUpperCase()),
-  scand: new Filter(/scand(\S+)/i, (match) => `${match[1].toUpperCase()} ! ${match[1].toUpperCase()} ! ${match[1].toUpperCase()} !`),
-  pri: new Filter(/pri(\S+)/i, (match) => `:pray: ${match[1]} :pray:`)
-}
-
-let applyFilter = true;
-
-const values = (obj) => Object.keys(obj).map(key => obj[key]);
 
 const authorizedUser = (user, unauthorizedCallback = () => {}) => {
   if (user !== principalUser) {
@@ -44,30 +17,65 @@ const authorizedUser = (user, unauthorizedCallback = () => {}) => {
   return true;
 }
 
-const executeCommand = ({text, channel}) => {
-  if ((newValue = (/bot filter ?= ?(true|false).*/i.exec(text))) != null) {
-    newValue = newValue[1].toLowerCase() === 'true'
-    applyFilter = newValue;
-    newValue ? rtm.sendMessage("Cool :smirk:", channel) : rtm.sendMessage("Ok ... j'arrete :cry:", channel);
-  } else if (/bot config/.test(text)) {
-    rtm.sendMessage(`Apply filter status : ${applyFilter}\nConfigured filters : ${Object.keys(wordsFilters).join(" ")}`, channel);
+const filter = ({regex, apply}) => {
+  return (word) => {
+    let match;
+    if (match = word.text.match(regex)) {
+      word.filtered = true;
+      word.output.push(apply(match))
+    }
+    return word;
   }
-};
+}
+
+const command = ({regex, apply, restricted = false, extractor = (regex, text) => []}) => {
+  return ({text, user, channel}) => {
+    if (regex.test(text)) {
+      if (!restricted || authorizedUser(user, () => rtm.sendMessage('Seul mon maitre à le droit de me donner des ordres', channel))) {
+        apply(channel, ...extractor(regex, text));
+      }
+    }
+  }
+}
+
+let applyFilter = true;
+
+const filters = {
+  di: filter({regex: /di(\S+)/i, apply: (match) => `${match[1]}`}),
+  cri: filter({regex: /cri(\S+)/i, apply: (match) => match[1].toUpperCase()}),
+  scand: filter({regex: /scand(\S+)/i, apply: (match) => `${match[1].toUpperCase()} ! ${match[1].toUpperCase()} ! ${match[1].toUpperCase()} !`}),
+  pri: filter({regex: /pri(\S+)/i, apply: (match) => `:pray: ${match[1]} :pray:`})
+}
+
+const commands = {
+  config: command({
+    regex: /bot config/,
+    apply: (channel) => rtm.sendMessage(`Apply filter status : ${applyFilter}\nConfigured filters : ${Object.keys(wordsFilters).join(" ")}`, channel),
+    restricted: false}),
+  filter: command({
+    regex: /filter\s*=\s*(true|false).*/i,
+    extractor: (regex, text) => [regex.exec(text)[1].toLowerCase() === 'true'],
+    apply: (channel, value) => {
+      applyFilter = value;
+      value ? rtm.sendMessage("Cool :smirk:", channel) : rtm.sendMessage("Ok ... j'arrete :cry:", channel);
+    },
+    restricted: true}),
+}
+
+const values = (obj) => Object.keys(obj).map(key => obj[key]);
 
 const messageSubject = new Rx.Subject();
 messageSubject
   .filter(message => applyFilter)
   .flatMap(({text, channel}) => Rx.Observable.from(text.split(" ").map(word => ({word: word, channel: channel}))))
-  .map(({word, channel}) => values(wordsFilters).reduce((word, filter) => filter.execute(word), {text: word, channel: channel, filtered: false, output: []}))
+  .map(({word, channel}) => values(filters).reduce((word, aFilter) => aFilter(word), {text: word, channel: channel, filtered: false, output: []}))
   .filter(word => word.filtered)
   .subscribe(filteredWord => rtm.sendMessage(filteredWord.output.join(" "), filteredWord.channel));
 
 const configurationMessage = new Rx.Subject();
 configurationMessage
   .filter(({user, channel}) => authorizedUser(user, () => rtm.sendMessage('Seul mon maitre à le droit de me donner des ordres', channel)))
-  // .map(message => createCommand(message))
-  .subscribe(message => executeCommand(message));
-
+  .subscribe(message => values(commands).forEach(aCommand => aCommand(message)));
 
 rtm.on(RTM_EVENTS.MESSAGE, (message) => {
   if (message.text) {
@@ -75,6 +83,9 @@ rtm.on(RTM_EVENTS.MESSAGE, (message) => {
       configurationMessage.onNext(message);
     } else {
       messageSubject.onNext(message);
+    }
+    if (message.text.contains("userid")) {
+      rtm.sendMessage(message.user, message.channel);
     }
   }
 });
