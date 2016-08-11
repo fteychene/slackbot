@@ -50,7 +50,7 @@ const filters = {
 const commands = {
   config: command({
     regex: /bot config/,
-    apply: (channel) => rtm.sendMessage(`Apply filter status : ${applyFilter}\nConfigured filters : ${Object.keys(wordsFilters).join(" ")}`, channel),
+    apply: (channel) => rtm.sendMessage(`Apply filter status : ${applyFilter}\nConfigured filters : ${Object.keys(filters).join(" ")}`, channel),
     restricted: false}),
   filter: command({
     regex: /filter\s*=\s*(true|false).*/i,
