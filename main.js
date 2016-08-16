@@ -41,7 +41,7 @@ const command = ({regex, apply, restricted = false, extractor = (regex, text) =>
 let applyFilter = true;
 
 const filters = {
-  di: filter({regex: /di(\S+)/i, apply: (match) => `${match[1]}`}),
+  di: filter({regex: /d[iy](\S+)/i, apply: (match) => `${match[1]}`}),
   cri: filter({regex: /cri(\S+)/i, apply: (match) => match[1].toUpperCase()}),
   scand: filter({regex: /scand(\S+)/i, apply: (match) => `${match[1].toUpperCase()} ! ${match[1].toUpperCase()} ! ${match[1].toUpperCase()} !`}),
   pri: filter({regex: /pri(\S+)/i, apply: (match) => `:pray: ${match[1]} :pray:`})
