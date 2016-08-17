@@ -39,6 +39,7 @@ const command = ({regex, apply, restricted = false, extractor = (regex, text) =>
 }
 
 let applyFilter = true;
+const store = {}
 
 const filters = {
   di: filter({regex: /d[iy](\S+)/i, apply: (match) => `${match[1]}`}),
@@ -49,8 +50,8 @@ const filters = {
 
 const commands = {
   config: command({
-    regex: /bot config/,
-    apply: (channel) => rtm.sendMessage(`Apply filter status : ${applyFilter}\nConfigured filters : ${Object.keys(filters).join(" ")}`, channel),
+    regex: /config/,
+    apply: (channel) => rtm.sendMessage(`Apply filter status : ${applyFilter}\nConfigured commands : ${Object.keys(commands).join(" ")}\nConfigured filters : ${Object.keys(filters).join(" ")}`, channel),
     restricted: false}),
   filter: command({
     regex: /filter\s*=\s*(true|false).*/i,
@@ -60,6 +61,19 @@ const commands = {
       value ? rtm.sendMessage("Cool :smirk:", channel) : rtm.sendMessage("Ok ... j'arrete :cry:", channel);
     },
     restricted: true}),
+  store: command({
+      regex: /\s+(\w+)\s*=\s*(\w+)\s*/i,
+      extractor: (regex, text) => {
+        match = regex.exec(text);
+        return [match[1], match[2]]
+      },
+      apply: (channel, key, value) => { store[key] = value },
+      restricted: true}),
+  display: command({
+    regex: /\s+(\w+)\s*\?/i,
+      extractor: (regex, text) => [regex.exec(text)[1]],
+      apply: (channel, key) => rtm.sendMessage(`${key} : ${store[key]}`, channel)
+  })
 }
 
 const values = (obj) => Object.keys(obj).map(key => obj[key]);
