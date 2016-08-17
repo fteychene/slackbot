@@ -79,7 +79,7 @@ configurationMessage
 
 rtm.on(RTM_EVENTS.MESSAGE, (message) => {
   if (message.text) {
-    if (message.text.contains("bot")) {
+    if (message.text.startsWith("bot")) {
       configurationMessage.onNext(message);
     } else {
       messageSubject.onNext(message);
