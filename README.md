@@ -16,7 +16,7 @@ To run this bot on you Slack team :
 Filter are currently some word modifications based on French language.
 
 Currently the filters are :
- * Di : When a word contains di* it respond the rest of the word (ex : distance => stance)
+ * Di : When a word contains di* or dy* it respond the rest of the word (ex : distance => stance)
  * Cri : When a word contains cri* it respond the rest of the word as shout (ex : critique => TIQUE)
  * Pri : When a word contains pri* it response the rest of the word as a pray (ex : prison : :pray: son :pray:)
  * scand : When a word contains scand* it respons the rest of the word as a slogan (ex : scandaleux : ALEUX ! ALEUX ! ALEUX !)
@@ -27,4 +27,6 @@ The command are actions to change the behavior or the bot (stop/start applying f
 
 Currently the commands are :
  * bot config : Display the current state of the bot config
- * bot filters = (true|false) : Modify the application of the filters (if true the bot will respond with filters on message) *Restricted Command*
+ * bot filter = (true|false) : Modify the application of the filters (if true the bot will respond with filters on message) *Restricted Command*
+ * bot {key} = {value} : Store the key and value.
+ * bot {key} ? : Display the value of a key
