@@ -13,7 +13,7 @@ To run this bot on you Slack team :
 
 ## Filters
 
-Filter are currently some word modifications based on French language.
+Filter are currently some word modifications based on French language wordplay.
 
 Currently the filters are :
  * Di : When a word contains di* or dy* it respond the rest of the word (ex : distance => stance)
