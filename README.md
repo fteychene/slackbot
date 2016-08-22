@@ -25,8 +25,8 @@ Currently the filters are :
 
 The command are actions to change the behavior or the bot (stop/start applying filter, display current configuration).
 
-Currently the commands are :
- * bot config : Display the current state of the bot config
- * bot filter = (true|false) : Modify the application of the filters (if true the bot will respond with filters on message) *Restricted Command*
- * bot {key} = {value} : Store the key and value.
- * bot {key} ? : Display the value of a key
+Currently the commands are  (the only mandatory space is between the bot keyword and the command type):
+ * `bot config` : Display the current state of the bot config
+ * `bot filter = (true|false)` : Modify the application of the filters (if true the bot will respond with filters on message) *Restricted Command*
+ * `bot {key} = {value}` : Store the key and value.
+ * `bot {key} ?` : Display the value of a key
