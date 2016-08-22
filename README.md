@@ -19,7 +19,7 @@ Currently the filters are :
  * Di : When a word contains di* or dy* it respond the rest of the word (ex : distance => stance)
  * Cri : When a word contains cri* it respond the rest of the word as shout (ex : critique => TIQUE)
  * Pri : When a word contains pri* it response the rest of the word as a pray (ex : prison : :pray: son :pray:)
- * scand : When a word contains scand* it respons the rest of the word as a slogan (ex : scandaleux : ALEUX ! ALEUX ! ALEUX !)
+ * Scand : When a word contains scand* it respons the rest of the word as a slogan (ex : scandaleux : ALEUX ! ALEUX ! ALEUX !)
 
 ## Commands
 
