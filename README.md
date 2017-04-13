@@ -33,4 +33,4 @@ Currently the commands are  (the only mandatory space is between the bot keyword
  * `bot {key} = {value}` : Store the key and value.
  * `bot {key} ?` : Display the value of a key
  * `bot addmom={value}` : Adds something to the mom terminology array
- * `bot addyomom={value}` : Adds something to the insults array
+ * `bot addmomAdjective={value}` : Adds something to the insults array
