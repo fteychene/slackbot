@@ -20,6 +20,8 @@ Currently the filters are :
  * Cri : When a word contains cri* it respond the rest of the word as shout (ex : critique => TIQUE)
  * Pri : When a word contains pri* it response the rest of the word as a pray (ex : prison : :pray: son :pray:)
  * Scand : When a word contains scand* it respons the rest of the word as a slogan (ex : scandaleux : ALEUX ! ALEUX ! ALEUX !)
+ * !sam : Prints an angry insult based on mothers
+ * !sam (integer) (integer) : Same as above, but you choose the terminology
 
 ## Commands
 
@@ -30,3 +32,5 @@ Currently the commands are  (the only mandatory space is between the bot keyword
  * `bot filter = (true|false)` : Modify the application of the filters (if true the bot will respond with filters on message) *Restricted Command*
  * `bot {key} = {value}` : Store the key and value.
  * `bot {key} ?` : Display the value of a key
+ * `bot addmom={value}` : Adds something to the mom terminology array
+ * `bot addmomAdjective={value}` : Adds something to the insults array
