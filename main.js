@@ -42,14 +42,14 @@ let applyFilter = true;
 const store = {}
 
 const mom = ["Sa mère", "Sa maman", "Sa génitrice"];
-const yomom = ["la prude", "la vertueuse", "la prostipéripatétipute"];
+const momAdjective = ["la prude", "la vertueuse", "la prostipéripatétipute"];
 
 const filters = {
     di: filter({regex: /d[iy](\S+)/i, apply: (match) => `${match[1]}`}),
     cri: filter({regex: /cri(\S+)/i, apply: (match) => match[1].toUpperCase()}),
     scand: filter({regex: /scand(\S+)/i, apply: (match) => `${match[1].toUpperCase()} ! ${match[1].toUpperCase()} ! ${match[1].toUpperCase()} !`}),
     pri: filter({regex: /pri(\S+)/i, apply: (match) => `:pray: ${match[1]} :pray:`}),
-    sam: filter({regex: /!sam/i, apply: (match) => mom[Math.floor(Math.random() * (mom.length))] + " " + yomom[Math.floor(Math.random() * (yomom.length - 1))]}),
+    sam: filter({regex: /!sam/i, apply: (match) => mom[Math.floor(Math.random() * (mom.length))] + " " + momAdjective[Math.floor(Math.random() * (momAdjective.length - 1))]}),
     samspec: filter({regex: /!sam\s(\d)\s(\d)/i, apply: (match) => mom[match[1]] + " " + match[2]})
 }
 
@@ -88,10 +88,10 @@ const commands = {
         apply: (channel, value) => mom.push(value),
         restricted: false
     }),
-    addyomom: command({
-        regex: /addyomom=(.*)/i,
+    addmomAdjective: command({
+        regex: /addmomAdjective=(.*)/i,
         extractor: (regex, text) => regex.exec(text)[1],
-        apply: (channel, value) => yomom.push(value),
+        apply: (channel, value) => momAdjective.push(value),
         restricted: false
     }),
 }
